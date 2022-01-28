@@ -349,6 +349,26 @@ void bar_put(win_bar_t *bar, const char *fmt, ...)
 
 void update_info(void)
 {
+	int x, y;
+	win_cursor_pos(&win, &x, &y);
+
+	int dx, dy, dw, dh;
+
+	if (img.x <= 0) {
+		dx = 0;
+		dw = win.w;
+	} else {
+		dx = img.x;
+		dw = img.w * img.zoom;
+	}
+	if (img.y <= 0) {
+		dy = 0;
+		dh = win.h;
+	} else {
+		dy = img.y;
+		dh = img.h * img.zoom;
+	}
+
 	unsigned int i, fn, fw;
 	const char * mark;
 	win_bar_t *l = &win.bar.l, *r = &win.bar.r;
@@ -379,6 +399,14 @@ void update_info(void)
 		if (img.gamma != 0)
 			bar_put(r, "G%+d" BAR_SEP, img.gamma);
 		bar_put(r, "%3d%%" BAR_SEP, (int) (img.zoom * 100.0));
+
+        // print cursor position relative to img
+        if (x < dx || x > (dx + dw) || y < dy || y > (dy + dh)) {
+            bar_put(r, "-/%d -/%d" BAR_SEP, img.w, img.h);
+        } else {
+            bar_put(r, "%d/%d %d/%d" BAR_SEP, (int)((float)(x - dx) / img.zoom), img.w, (int)((float)(y - dy) / img.zoom), img.h);
+        }
+
 		if (img.multi.cnt > 0) {
 			for (fn = 0, i = img.multi.cnt; i > 0; fn++, i /= 10);
 			bar_put(r, "%0*d/%d" BAR_SEP, fn, img.multi.sel + 1, img.multi.cnt);
@@ -692,6 +720,8 @@ void run(void)
 	XEvent ev, nextev;
 
 	while (true) {
+        redraw();
+
 		to_set = check_timeouts(&timeout);
 		init_thumb = mode == MODE_THUMB && tns.initnext < filecnt;
 		load_thumb = mode == MODE_THUMB && tns.loadnext < tns.end;

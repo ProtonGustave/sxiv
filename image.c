@@ -471,6 +471,8 @@ void img_render(img_t *img)
 
 	win_clear(win);
 
+    win_draw_rect(win, dx - 4, dy - 4, dw + 8, dh + 8, false, 4, win->fg.pixel);
+
 	imlib_context_set_image(img->im);
 	imlib_context_set_anti_alias(img->aa);
 	imlib_context_set_drawable(win->buf.pm);
@@ -509,6 +511,7 @@ void img_render(img_t *img)
 	} else {
 		imlib_render_image_part_on_drawable_at_size(sx, sy, sw, sh, dx, dy, dw, dh);
 	}
+
 	img->dirty = false;
 }
 
