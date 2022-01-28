@@ -404,7 +404,9 @@ void update_info(void)
         if (x < dx || x > (dx + dw) || y < dy || y > (dy + dh)) {
             bar_put(r, "-/%d -/%d" BAR_SEP, img.w, img.h);
         } else {
-            bar_put(r, "%d/%d %d/%d" BAR_SEP, (int)((float)(x - dx) / img.zoom), img.w, (int)((float)(y - dy) / img.zoom), img.h);
+            float percentX = (float)(x - dx) / dw;
+            float percentY = (float)(y - dy) / dh;
+            bar_put(r, "%d(%.2f)/%d %d(%.2f)/%d" BAR_SEP, (int)((float)(x - dx) / img.zoom), img.w, percentX, (int)((float)(y - dy) / img.zoom), percentY, img.h);
         }
 
 		if (img.multi.cnt > 0) {
